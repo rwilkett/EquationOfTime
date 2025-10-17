@@ -1,0 +1,65 @@
+﻿<Application x:Class="SolarPositionCalculator.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:SolarPositionCalculator">
+    <Application.Resources>
+        <!-- Accessibility and Theme Resources -->
+        <SolidColorBrush x:Key="BackgroundBrush" Color="White"/>
+        <SolidColorBrush x:Key="ForegroundBrush" Color="Black"/>
+        <SolidColorBrush x:Key="AccentBrush" Color="Blue"/>
+        <SolidColorBrush x:Key="BorderBrush" Color="Gray"/>
+        <SolidColorBrush x:Key="DisabledBrush" Color="LightGray"/>
+        
+        <!-- Enhanced Focus Visual Style -->
+        <Style x:Key="AccessibleFocusVisual">
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Border BorderBrush="Black" BorderThickness="2" CornerRadius="2" Margin="2">
+                            <Border BorderBrush="White" BorderThickness="1" CornerRadius="1"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!-- Enhanced Button Style with Better Focus -->
+        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource AccessibleFocusVisual}"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Margin" Value="2"/>
+        </Style>
+        
+        <!-- Enhanced TextBox Style -->
+        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource AccessibleFocusVisual}"/>
+            <Setter Property="Padding" Value="4,2"/>
+            <Setter Property="Margin" Value="2"/>
+        </Style>
+        
+        <!-- Enhanced ComboBox Style -->
+        <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource AccessibleFocusVisual}"/>
+            <Setter Property="Padding" Value="4,2"/>
+            <Setter Property="Margin" Value="2"/>
+        </Style>
+        
+        <!-- Enhanced CheckBox Style -->
+        <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource AccessibleFocusVisual}"/>
+            <Setter Property="Margin" Value="2"/>
+        </Style>
+        
+        <!-- Enhanced ToolTip Style -->
+        <Style TargetType="ToolTip">
+            <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="MaxWidth" Value="300"/>
+            <Setter Property="HasDropShadow" Value="True"/>
+        </Style>
+    </Application.Resources>
+</Application>

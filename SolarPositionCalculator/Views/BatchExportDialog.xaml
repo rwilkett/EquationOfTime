@@ -1,0 +1,124 @@
+<Window x:Class="SolarPositionCalculator.Views.BatchExportDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Batch Export Charts" Height="500" Width="600"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Chart Selection -->
+        <GroupBox Grid.Row="0" Header="Charts to Export" Margin="0,0,0,10">
+            <StackPanel Margin="10">
+                <CheckBox x:Name="EquationOfTimeCheckBox" Content="Equation of Time Chart" IsChecked="True" Margin="0,0,0,5"/>
+                <CheckBox x:Name="SunPathCheckBox" Content="Sun Path Diagram" IsChecked="True" Margin="0,0,0,5"/>
+                <CheckBox x:Name="CurrentDayCheckBox" Content="Current Day Sun Path" IsChecked="False" Margin="0,0,0,5"/>
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                    <Button Content="Select All" Click="SelectAll_Click" Width="80" Margin="0,0,10,0"/>
+                    <Button Content="Select None" Click="SelectNone_Click" Width="80"/>
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Export Options -->
+        <GroupBox Grid.Row="1" Header="Export Options" Margin="0,0,0,10">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Format and Dimensions -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                    <Label Content="Format:" VerticalAlignment="Center" Width="80"/>
+                    <RadioButton x:Name="BatchPngRadio" Content="PNG" IsChecked="True" Margin="0,0,20,0" VerticalAlignment="Center"/>
+                    <RadioButton x:Name="BatchSvgRadio" Content="SVG" Margin="0,0,20,0" VerticalAlignment="Center"/>
+                    <Label Content="Size:" VerticalAlignment="Center" Margin="20,0,10,0"/>
+                    <ComboBox x:Name="SizeComboBox" Width="120" VerticalAlignment="Center">
+                        <ComboBoxItem Content="800x600" IsSelected="True"/>
+                        <ComboBoxItem Content="1200x900"/>
+                        <ComboBoxItem Content="1920x1080"/>
+                        <ComboBoxItem Content="Custom"/>
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- Custom dimensions -->
+                <StackPanel x:Name="CustomSizePanel" Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10" Visibility="Collapsed">
+                    <Label Content="Width:" VerticalAlignment="Center" Width="80"/>
+                    <TextBox x:Name="BatchWidthTextBox" Text="800" Width="80" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                    <Label Content="Height:" VerticalAlignment="Center" Margin="10,0,10,0"/>
+                    <TextBox x:Name="BatchHeightTextBox" Text="600" Width="80" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Quality settings -->
+                <StackPanel x:Name="BatchQualityPanel" Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,10">
+                    <Label Content="Quality:" VerticalAlignment="Center" Width="80"/>
+                    <Slider x:Name="QualitySlider" Minimum="1" Maximum="100" Value="90" Width="150" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="QualityValueText" Text="90%" VerticalAlignment="Center" Margin="10,0,0,0" Width="40"/>
+                </StackPanel>
+
+                <!-- Additional options -->
+                <StackPanel Grid.Row="3" Orientation="Horizontal">
+                    <CheckBox x:Name="BatchIncludeTitleCheckBox" Content="Include titles" IsChecked="True" Margin="0,0,20,0"/>
+                    <CheckBox x:Name="BatchIncludeLegendCheckBox" Content="Include legends" IsChecked="True"/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <!-- Output Settings -->
+        <GroupBox Grid.Row="2" Header="Output Settings" Margin="0,0,0,10">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Output directory -->
+                <Grid Grid.Row="0" Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Content="Directory:" VerticalAlignment="Center"/>
+                    <TextBox x:Name="OutputDirectoryTextBox" Grid.Column="1" Margin="10,0,10,0" VerticalAlignment="Center"/>
+                    <Button x:Name="BrowseDirectoryButton" Grid.Column="2" Content="Browse..." Click="BrowseDirectory_Click" Width="80"/>
+                </Grid>
+
+                <!-- File naming -->
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+                    <Label Content="File prefix:" VerticalAlignment="Center" Width="80"/>
+                    <TextBox x:Name="FilePrefixTextBox" Text="solar_chart" Width="120" Margin="0,0,20,0" VerticalAlignment="Center"/>
+                    <CheckBox x:Name="IncludeTimestampCheckBox" Content="Include timestamp" IsChecked="True" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Organization -->
+                <CheckBox x:Name="GroupByTypeCheckBox" Grid.Row="2" Content="Create subdirectories by chart type" IsChecked="False"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Progress -->
+        <GroupBox Grid.Row="3" Header="Progress" Margin="0,0,0,10" Visibility="Collapsed" x:Name="ProgressGroup">
+            <StackPanel Margin="10">
+                <ProgressBar x:Name="ExportProgressBar" Height="20" Margin="0,0,0,5"/>
+                <TextBlock x:Name="ProgressTextBlock" Text="Ready to export..." HorizontalAlignment="Center"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="Start Export" Click="StartExport_Click" Width="100" Margin="0,0,10,0" IsDefault="True"/>
+            <Button Content="Cancel" Click="Cancel_Click" Width="80" IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,376 @@
+﻿<Window x:Class="SolarPositionCalculator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SolarPositionCalculator"
+        xmlns:views="clr-namespace:SolarPositionCalculator.Views"
+        xmlns:converters="clr-namespace:SolarPositionCalculator.Converters"
+        xmlns:oxy="http://oxyplot.org/wpf"
+        mc:Ignorable="d"
+        Title="Solar Position Calculator" 
+        Height="800" 
+        Width="1200"
+        MinHeight="600"
+        MinWidth="900"
+        WindowStartupLocation="CenterScreen">
+    
+    <Window.Resources>
+        <!-- Value Converters -->
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <converters:BooleanToColorConverter x:Key="BooleanToColorConverter"/>
+        
+        <!-- Styles -->
+        <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="DarkBlue"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+        
+        <Style x:Key="TabHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="5,0"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Menu and Toolbar -->
+        <DockPanel Grid.Row="0">
+            <!-- Menu Bar -->
+            <Menu DockPanel.Dock="Top" Background="LightGray">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_Export Data..." Command="{Binding ExportDataCommand}"
+                              ToolTip="Export solar position calculations to CSV format (Ctrl+E)"/>
+                    <MenuItem Header="_Export Charts..." Command="{Binding ExportChartsCommand}"
+                              ToolTip="Export visualizations as image files (Ctrl+Shift+E)"/>
+                    <Separator/>
+                    <MenuItem Header="E_xit" Click="Exit_Click"
+                              ToolTip="Close the application (Alt+F4)"/>
+                </MenuItem>
+                <MenuItem Header="_View">
+                    <MenuItem Header="_Real-time Mode" IsCheckable="True" IsChecked="{Binding MainViewModel.IsRealTimeMode}"
+                              ToolTip="Enable automatic updates using current system time (Ctrl+R)"/>
+                    <MenuItem Header="_Show Seasonal Paths" IsCheckable="True" IsChecked="{Binding SunPathViewModel.ShowSeasonalPaths}"
+                              ToolTip="Display sun paths for different seasons on the diagram"/>
+                </MenuItem>
+                <MenuItem Header="_Tools">
+                    <MenuItem Header="_Settings..." Click="Settings_Click"
+                              ToolTip="Configure application preferences and default values (Ctrl+,)"/>
+                </MenuItem>
+                <MenuItem Header="_Help">
+                    <MenuItem Header="_Keyboard Shortcuts" Click="KeyboardShortcuts_Click"
+                              ToolTip="View available keyboard shortcuts (F1)"/>
+                    <MenuItem Header="_About" Click="About_Click"
+                              ToolTip="Information about this application"/>
+                </MenuItem>
+            </Menu>
+            
+            <!-- Toolbar -->
+            <ToolBarTray DockPanel.Dock="Top" Background="LightGray">
+                <ToolBar>
+                    <Button Command="{Binding MainViewModel.CalculateSolarPositionCommand}">
+                        <Button.ToolTip>
+                            <ToolTip>
+                                <StackPanel>
+                                    <TextBlock Text="Calculate Solar Position" FontWeight="Bold"/>
+                                    <TextBlock Text="Calculates the sun's azimuth and elevation angles"/>
+                                    <TextBlock Text="for the specified location and time."/>
+                                    <TextBlock Text="Keyboard shortcut: F5" FontStyle="Italic" Margin="0,5,0,0"/>
+                                </StackPanel>
+                            </ToolTip>
+                        </Button.ToolTip>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="🌞" FontSize="16" Margin="0,0,5,0"/>
+                            <TextBlock Text="Calculate"/>
+                        </StackPanel>
+                    </Button>
+                    
+                    <Separator/>
+                    
+                    <Button Command="{Binding MainViewModel.ToggleRealTimeModeCommand}">
+                        <Button.ToolTip>
+                            <ToolTip>
+                                <StackPanel>
+                                    <TextBlock Text="Toggle Real-time Mode" FontWeight="Bold"/>
+                                    <TextBlock Text="Enables automatic updates every minute"/>
+                                    <TextBlock Text="using the current system time."/>
+                                    <TextBlock Text="Keyboard shortcut: Ctrl+R" FontStyle="Italic" Margin="0,5,0,0"/>
+                                </StackPanel>
+                            </ToolTip>
+                        </Button.ToolTip>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="⏰" FontSize="16" Margin="0,0,5,0"/>
+                            <TextBlock Text="Real-time"/>
+                        </StackPanel>
+                    </Button>
+                    
+                    <Separator/>
+                    
+                    <Button Command="{Binding ExportDataCommand}">
+                        <Button.ToolTip>
+                            <ToolTip>
+                                <StackPanel>
+                                    <TextBlock Text="Export Solar Position Data" FontWeight="Bold"/>
+                                    <TextBlock Text="Exports calculated solar position data"/>
+                                    <TextBlock Text="to CSV format for use in other applications."/>
+                                    <TextBlock Text="Keyboard shortcut: Ctrl+E" FontStyle="Italic" Margin="0,5,0,0"/>
+                                </StackPanel>
+                            </ToolTip>
+                        </Button.ToolTip>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📊" FontSize="16" Margin="0,0,5,0"/>
+                            <TextBlock Text="Export Data"/>
+                        </StackPanel>
+                    </Button>
+                    
+                    <Button Command="{Binding ExportChartsCommand}">
+                        <Button.ToolTip>
+                            <ToolTip>
+                                <StackPanel>
+                                    <TextBlock Text="Export Charts and Visualizations" FontWeight="Bold"/>
+                                    <TextBlock Text="Exports equation of time charts and"/>
+                                    <TextBlock Text="sun path diagrams as image files."/>
+                                    <TextBlock Text="Keyboard shortcut: Ctrl+Shift+E" FontStyle="Italic" Margin="0,5,0,0"/>
+                                </StackPanel>
+                            </ToolTip>
+                        </Button.ToolTip>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📈" FontSize="16" Margin="0,0,5,0"/>
+                            <TextBlock Text="Export Charts"/>
+                        </StackPanel>
+                    </Button>
+                    
+                    <Separator/>
+                    
+                    <Button Command="{Binding EquationOfTimeViewModel.RefreshChartCommand}" 
+                            ToolTip="Refresh Equation of Time Chart">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="🔄" FontSize="16" Margin="0,0,5,0"/>
+                            <TextBlock Text="Refresh"/>
+                        </StackPanel>
+                    </Button>
+                </ToolBar>
+            </ToolBarTray>
+        </DockPanel>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Row="1" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="350"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Panel - Input Controls -->
+            <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="0,0,10,0">
+                    <!-- Coordinate Input -->
+                    <views:CoordinateInputControl DataContext="{Binding}" Margin="0,0,0,15"/>
+                    
+                    <!-- Date/Time Input -->
+                    <views:DateTimePickerControl DataContext="{Binding}" Margin="0,0,0,15"/>
+                    
+                    <!-- Solar Position Results -->
+                    <views:SolarPositionResultsControl DataContext="{Binding}" Margin="0,0,0,15"/>
+                    
+                    <!-- Quick Actions -->
+                    <Border BorderBrush="LightGray" BorderThickness="1" CornerRadius="5" Padding="10">
+                        <StackPanel>
+                            <TextBlock Text="Quick Actions" Style="{StaticResource SectionHeaderStyle}"/>
+                            
+                            <Button Content="Current Location &amp; Time" 
+                                    Command="{Binding SetCurrentDateTimeCommand}"
+                                    Margin="0,0,0,5"
+                                    Padding="5,3"/>
+                            
+                            <Button Content="Summer Solstice" 
+                                    Command="{Binding GoToSummerSolsticeCommand}"
+                                    Margin="0,0,0,5"
+                                    Padding="5,3"/>
+                            
+                            <Button Content="Winter Solstice" 
+                                    Command="{Binding GoToWinterSolsticeCommand}"
+                                    Margin="0,0,0,5"
+                                    Padding="5,3"/>
+                            
+                            <Button Content="Equinox" 
+                                    Command="{Binding GoToEquinoxCommand}"
+                                    Margin="0,0,0,5"
+                                    Padding="5,3"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Splitter -->
+            <GridSplitter Grid.Column="1" 
+                         Width="5" 
+                         HorizontalAlignment="Stretch" 
+                         Background="LightGray"/>
+
+            <!-- Right Panel - Visualizations -->
+            <TabControl Grid.Column="2" Margin="10,0,0,0">
+                <!-- Equation of Time Tab -->
+                <TabItem>
+                    <TabItem.Header>
+                        <TextBlock Text="Equation of Time" Style="{StaticResource TabHeaderStyle}"/>
+                    </TabItem.Header>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Equation of Time Controls -->
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                            <TextBlock Text="Year:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                            <TextBox Text="{Binding EquationOfTimeViewModel.SelectedYear, UpdateSourceTrigger=PropertyChanged}" 
+                                     Width="60" Margin="0,0,10,0"/>
+                            <Button Content="◀" Command="{Binding EquationOfTimeViewModel.PreviousYearCommand}" 
+                                    Width="30" Margin="0,0,5,0"/>
+                            <Button Content="▶" Command="{Binding EquationOfTimeViewModel.NextYearCommand}" 
+                                    Width="30" Margin="0,0,10,0"/>
+                            <Button Content="Current Year" Command="{Binding EquationOfTimeViewModel.GoToCurrentYearCommand}" 
+                                    Margin="0,0,10,0"/>
+                            <Button Content="Refresh" Command="{Binding EquationOfTimeViewModel.RefreshChartCommand}" 
+                                    Margin="0,0,10,0"/>
+                            <Button Content="Export" Command="{Binding EquationOfTimeViewModel.ExportChartCommand}"/>
+                        </StackPanel>
+                        
+                        <!-- Equation of Time Chart -->
+                        <oxy:PlotView Grid.Row="1" 
+                                     Model="{Binding EquationOfTimeViewModel.EquationOfTimeChart.PlotModel}"
+                                     Background="White"
+                                     Margin="0,0,0,10"/>
+                        
+                        <!-- Equation of Time Info -->
+                        <Border Grid.Row="2" BorderBrush="LightGray" BorderThickness="1" Padding="10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Selected Date Information" FontWeight="Bold" Margin="0,0,0,5"/>
+                                    <TextBlock Text="{Binding EquationOfTimeViewModel.SelectedDate, StringFormat='Date: {0:MMM dd, yyyy}'}"/>
+                                    <TextBlock Text="{Binding EquationOfTimeViewModel.FormattedEquationOfTime, StringFormat='Equation of Time: {0}'}"/>
+                                    <TextBlock Text="{Binding EquationOfTimeViewModel.EquationOfTimeDescription}" 
+                                               TextWrapping="Wrap" FontStyle="Italic" Margin="0,5,0,0"/>
+                                </StackPanel>
+                                
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="Annual Statistics" FontWeight="Bold" Margin="0,0,0,5"/>
+                                    <TextBlock Text="{Binding EquationOfTimeViewModel.DataStatistics}"/>
+                                    <TextBlock Text="{Binding EquationOfTimeViewModel.StatusMessage}" 
+                                               FontSize="11" Foreground="DarkGreen" Margin="0,5,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </TabItem>
+
+                <!-- Sun Path Tab -->
+                <TabItem>
+                    <TabItem.Header>
+                        <TextBlock Text="Sun Path Diagram" Style="{StaticResource TabHeaderStyle}"/>
+                    </TabItem.Header>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Sun Path Controls -->
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                            <CheckBox Content="Highlight Current Position" 
+                                     IsChecked="{Binding SunPathViewModel.HighlightCurrentPosition}"
+                                     Margin="0,0,15,0"/>
+                            <CheckBox Content="Show Seasonal Paths" 
+                                     IsChecked="{Binding SunPathViewModel.ShowSeasonalPaths}"
+                                     Command="{Binding SunPathViewModel.ToggleSeasonalPathsCommand}"
+                                     Margin="0,0,15,0"/>
+                            <Button Content="Refresh Position" 
+                                    Command="{Binding SunPathViewModel.RefreshCurrentPositionCommand}" 
+                                    Margin="0,0,10,0"/>
+                            <Button Content="Export" 
+                                    Command="{Binding SunPathViewModel.ExportChartCommand}"/>
+                        </StackPanel>
+                        
+                        <!-- Sun Path Chart -->
+                        <oxy:PlotView Grid.Row="1" 
+                                     Model="{Binding SunPathViewModel.SunPathChart.PlotModel}"
+                                     Background="White"
+                                     Margin="0,0,0,10"/>
+                        
+                        <!-- Sun Path Info -->
+                        <Border Grid.Row="2" BorderBrush="LightGray" BorderThickness="1" Padding="10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Sun Times" FontWeight="Bold" Margin="0,0,0,5"/>
+                                    <TextBlock Text="{Binding SunPathViewModel.SunriseTime, StringFormat='Sunrise: {0}'}"/>
+                                    <TextBlock Text="{Binding SunPathViewModel.SunsetTime, StringFormat='Sunset: {0}'}"/>
+                                    <TextBlock Text="{Binding SunPathViewModel.FormattedDayLength, StringFormat='Day Length: {0}'}"/>
+                                </StackPanel>
+                                
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="Sun Position" FontWeight="Bold" Margin="0,0,0,5"/>
+                                    <TextBlock Text="{Binding SunPathViewModel.FormattedMaxElevation, StringFormat='Max Elevation: {0}'}"/>
+                                    <TextBlock Text="{Binding SunPathViewModel.SunVisibilityStatus}"/>
+                                    <TextBlock Text="{Binding SunPathViewModel.SunPathDescription}" 
+                                               TextWrapping="Wrap" FontSize="11" Margin="0,5,0,0"/>
+                                </StackPanel>
+                                
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="Special Conditions" FontWeight="Bold" Margin="0,0,0,5"/>
+                                    <TextBlock Text="{Binding SunPathViewModel.SpecialConditions}" 
+                                               TextWrapping="Wrap" 
+                                               Foreground="DarkRed"
+                                               FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Grid>
+
+        <!-- Status Bar -->
+        <StatusBar Grid.Row="2" Background="LightGray">
+            <StatusBarItem>
+                <TextBlock Text="{Binding MainViewModel.StatusMessage}"/>
+            </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Real-time: "/>
+                    <TextBlock Text="{Binding MainViewModel.IsRealTimeMode}" FontWeight="Bold"
+                               Foreground="{Binding MainViewModel.IsRealTimeMode, Converter={StaticResource BooleanToColorConverter}}"/>
+                    <TextBlock Text="{Binding MainViewModel.FormattedCurrentLocalTime}" 
+                               Margin="10,0,0,0" FontFamily="Consolas" FontSize="11"
+                               Visibility="{Binding MainViewModel.IsRealTimeMode, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <TextBlock Text=" | Coordinates: " Margin="10,0,0,0"/>
+                    <TextBlock Text="{Binding MainViewModel.FormattedCoordinates}"/>
+                </StackPanel>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>
