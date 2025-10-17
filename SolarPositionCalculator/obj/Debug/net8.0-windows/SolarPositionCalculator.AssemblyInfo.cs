@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SolarPositionCalculator")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8f017b33b6a82daacad2286485517b89bb76bf93")]
 [assembly: System.Reflection.AssemblyProductAttribute("SolarPositionCalculator")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SolarPositionCalculator")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

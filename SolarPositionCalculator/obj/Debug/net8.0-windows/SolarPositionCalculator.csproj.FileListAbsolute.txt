@@ -69,3 +69,4 @@ C:\Users\raywi\source\repos\EquationOfTime\SolarPositionCalculator\obj\Debug\net
 C:\Users\raywi\source\repos\EquationOfTime\SolarPositionCalculator\obj\Debug\net8.0-windows\Views\SettingsDialog.baml
 C:\Users\raywi\source\repos\EquationOfTime\SolarPositionCalculator\obj\Debug\net8.0-windows\Views\SettingsDialog.g.cs
 C:\Users\raywi\source\repos\EquationOfTime\SolarPositionCalculator\obj\Debug\net8.0-windows\App.baml
+C:\Users\raywi\source\repos\EquationOfTime\SolarPositionCalculator\obj\Debug\net8.0-windows\SolarPositionCalculator.sourcelink.json
