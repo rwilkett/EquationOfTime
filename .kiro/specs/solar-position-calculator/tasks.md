@@ -42,7 +42,17 @@
     - Implement date-specific equation of time lookup
     - _Requirements: 2.1, 2.2, 2.3_
 
-  - [ ]* 2.4 Write unit tests for astronomical calculations
+  - [x] 2.4 Write unit tests for astronomical calculations
+
+
+
+
+
+
+
+
+
+
     - Test solar position calculations against known reference values
     - Validate equation of time calculations with NOAA data
     - Test edge cases for polar regions and extreme dates
@@ -70,7 +80,12 @@
     - Handle daylight saving time transitions
     - _Requirements: 6.3, 6.4, 6.5_
 
-  - [ ]* 3.3 Write unit tests for coordinate and time operations
+  - [x] 3.3 Write unit tests for coordinate and time operations
+
+
+
+
+
     - Test coordinate parsing and validation
     - Validate time zone conversions and DST handling
     - Test coordinate format conversions
@@ -176,7 +191,13 @@
     - Code current time display with local and UTC times
     - _Requirements: 4.1, 4.2, 4.4_
 
-  - [ ]* 6.3 Write integration tests for real-time functionality
+  - [x] 6.3 Write integration tests for real-time functionality
+
+
+
+
+
+
     - Test real-time update accuracy and timing
     - Validate UI updates during real-time mode
     - Test start/stop functionality and state management

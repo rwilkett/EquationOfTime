@@ -1,37 +1,38 @@
 using System;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
 
 namespace SolarPositionCalculator.Converters;
 
 /// <summary>
-/// Converter that inverts boolean values
+/// Converter that converts boolean values to visibility (inverted)
 /// </summary>
-public class InverseBooleanConverter : IValueConverter
+public class InverseBooleanToVisibilityConverter : IValueConverter
 {
     /// <summary>
-    /// Converts a boolean value to its inverse
+    /// Converts a boolean value to visibility (inverted)
     /// </summary>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         if (value is bool boolValue)
         {
-            return !boolValue;
+            return boolValue ? Visibility.Collapsed : Visibility.Visible;
         }
 
-        return false;
+        return Visibility.Collapsed;
     }
 
     /// <summary>
-    /// Converts an inverted boolean back to original
+    /// Converts visibility back to boolean (inverted)
     /// </summary>
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is bool boolValue)
+        if (value is Visibility visibility)
         {
-            return !boolValue;
+            return visibility != Visibility.Visible;
         }
 
-        return false;
+        return true;
     }
 }

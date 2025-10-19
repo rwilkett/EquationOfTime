@@ -78,7 +78,7 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     private string _edgeCaseMessage = "";
 
-    public MainViewModel(IAstronomicalCalculator astronomicalCalculator, ICoordinateConverter coordinateConverter, 
+    public MainViewModel(IAstronomicalCalculator astronomicalCalculator, ICoordinateConverter coordinateConverter,
         IRealTimeService realTimeService, IValidationService validationService, IErrorHandlingService errorHandlingService)
     {
         _astronomicalCalculator = astronomicalCalculator ?? throw new ArgumentNullException(nameof(astronomicalCalculator));
@@ -86,18 +86,18 @@ public partial class MainViewModel : ViewModelBase
         _realTimeService = realTimeService ?? throw new ArgumentNullException(nameof(realTimeService));
         _validationService = validationService ?? throw new ArgumentNullException(nameof(validationService));
         _errorHandlingService = errorHandlingService ?? throw new ArgumentNullException(nameof(errorHandlingService));
-        
+
         // Subscribe to real-time updates
         _realTimeService.TimeUpdated += OnRealTimeUpdate;
-        
+
         // Set default coordinates (Greenwich, UK)
         Latitude = 51.4769;
         Longitude = -0.0005;
-        
+
         // Initialize current time displays
         CurrentLocalTime = DateTime.Now;
         CurrentUtcTime = DateTime.UtcNow;
-        
+
         UpdateUtcTime();
         CalculateSolarPosition();
     }
@@ -123,12 +123,12 @@ public partial class MainViewModel : ViewModelBase
             await Task.Run(() =>
             {
                 var coordinate = new GeographicCoordinate(Latitude, Longitude);
-                
+
                 // Check for edge cases
                 CheckForEdgeCases(coordinate, SelectedDateTime);
-                
+
                 CurrentSolarPosition = _astronomicalCalculator.CalculateSolarPosition(coordinate, SelectedDateTime);
-                
+
                 UpdateSunVisibilityStatus();
                 UpdateUtcTime();
             });
@@ -140,7 +140,7 @@ public partial class MainViewModel : ViewModelBase
             var errorMessage = _errorHandlingService.HandleCalculationError(ex, "Solar Position Calculation");
             StatusMessage = errorMessage;
             CurrentSolarPosition = null;
-            
+
             // Check if error is recoverable and provide suggestions
             if (_errorHandlingService.IsRecoverableError(ex))
             {
@@ -165,7 +165,7 @@ public partial class MainViewModel : ViewModelBase
         {
             var coordinate = new GeographicCoordinate(Latitude, Longitude);
             CurrentSolarPosition = _astronomicalCalculator.CalculateSolarPosition(coordinate, SelectedDateTime);
-            
+
             UpdateSunVisibilityStatus();
             StatusMessage = "Ready";
         }
@@ -203,7 +203,7 @@ public partial class MainViewModel : ViewModelBase
     private void ToggleRealTimeMode()
     {
         IsRealTimeMode = !IsRealTimeMode;
-        
+
         if (IsRealTimeMode)
         {
             _realTimeService.StartRealTimeUpdates();
@@ -249,20 +249,20 @@ public partial class MainViewModel : ViewModelBase
     /// <summary>
     /// Handles real-time updates from the real-time service
     /// </summary>
-    private void OnRealTimeUpdate(object sender, TimeUpdateEventArgs e)
+    private void OnRealTimeUpdate(object? sender, TimeUpdateEventArgs e)
     {
         if (!IsRealTimeMode) return;
 
         // Update current time displays
         CurrentLocalTime = e.CurrentTime;
         CurrentUtcTime = e.UtcTime;
-        
+
         // Update selected date time to current time
         SelectedDateTime = e.CurrentTime;
-        
+
         // Recalculate solar position with new time
         CalculateSolarPosition();
-        
+
         StatusMessage = $"Real-time update: {e.CurrentTime:HH:mm:ss}";
     }
 
@@ -272,26 +272,26 @@ public partial class MainViewModel : ViewModelBase
     private bool ValidateInputs()
     {
         var hasErrors = false;
-        
+
         // Clear previous errors
         LatitudeError = "";
         LongitudeError = "";
         DateError = "";
         ValidationWarnings = "";
-        
+
         // Validate coordinates
         var coordinateValidation = _validationService.ValidateCoordinates(Latitude, Longitude);
         if (!coordinateValidation.IsValid)
         {
             var latValidation = _validationService.ValidateCoordinateInput(Latitude.ToString(), CoordinateType.Latitude);
             var lonValidation = _validationService.ValidateCoordinateInput(Longitude.ToString(), CoordinateType.Longitude);
-            
+
             if (!latValidation.IsValid)
             {
                 LatitudeError = _errorHandlingService.HandleValidationError(latValidation, "Latitude");
                 hasErrors = true;
             }
-            
+
             if (!lonValidation.IsValid)
             {
                 LongitudeError = _errorHandlingService.HandleValidationError(lonValidation, "Longitude");
@@ -302,7 +302,7 @@ public partial class MainViewModel : ViewModelBase
         {
             ValidationWarnings = string.Join("; ", coordinateValidation.WarningMessages!);
         }
-        
+
         // Validate date
         var dateValidation = _validationService.ValidateDate(SelectedDateTime);
         if (!dateValidation.IsValid)
@@ -316,7 +316,7 @@ public partial class MainViewModel : ViewModelBase
                 ValidationWarnings += "; ";
             ValidationWarnings += string.Join("; ", dateValidation.WarningMessages!);
         }
-        
+
         HasValidationErrors = hasErrors;
         return !hasErrors;
     }
@@ -327,7 +327,7 @@ public partial class MainViewModel : ViewModelBase
     private void CheckForEdgeCases(GeographicCoordinate location, DateTime date)
     {
         EdgeCaseMessage = "";
-        
+
         try
         {
             // Check if location is in polar region
@@ -337,18 +337,18 @@ public partial class MainViewModel : ViewModelBase
                 if (polarCondition.Type != PolarConditionType.Normal)
                 {
                     EdgeCaseMessage = _errorHandlingService.HandleEdgeCase(
-                        polarCondition.Type.ToString().ToLower().Replace("_", " "), 
-                        location, 
+                        polarCondition.Type.ToString().ToLower().Replace("_", " "),
+                        location,
                         date);
                 }
             }
-            
+
             // Check for extreme latitudes
             if (Math.Abs(location.Latitude) > 89.9)
             {
                 EdgeCaseMessage = _errorHandlingService.HandleEdgeCase("extreme latitude", location, date);
             }
-            
+
             // Check for equatorial regions
             if (Math.Abs(location.Latitude) < 1)
             {

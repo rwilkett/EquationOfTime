@@ -30,8 +30,25 @@ public static class ServiceConfiguration
         services.AddTransient<MainViewModel>();
         services.AddTransient<EquationOfTimeViewModel>();
         services.AddTransient<SunPathViewModel>();
-        services.AddTransient<CompositeViewModel>();
         services.AddTransient<CsvExportDialogViewModel>();
+
+        // Register CompositeViewModel with factory to resolve IServiceProvider
+        services.AddTransient<CompositeViewModel>(serviceProvider =>
+        {
+            var csvExportService = serviceProvider.GetRequiredService<ICsvExportService>();
+            var visualizationService = serviceProvider.GetRequiredService<IVisualizationService>();
+            var mainViewModel = serviceProvider.GetRequiredService<MainViewModel>();
+            var equationOfTimeViewModel = serviceProvider.GetRequiredService<EquationOfTimeViewModel>();
+            var sunPathViewModel = serviceProvider.GetRequiredService<SunPathViewModel>();
+
+            return new CompositeViewModel(
+                csvExportService,
+                visualizationService,
+                serviceProvider,
+                mainViewModel,
+                equationOfTimeViewModel,
+                sunPathViewModel);
+        });
 
         // Register the main window
         services.AddTransient<MainWindow>();

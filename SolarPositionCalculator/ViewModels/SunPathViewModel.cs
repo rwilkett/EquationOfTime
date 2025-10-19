@@ -95,12 +95,12 @@ public partial class SunPathViewModel : ViewModelBase
             {
                 // Calculate the sun path for the selected date
                 CurrentSunPath = _astronomicalCalculator.CalculateDailySunPath(Location, SelectedDate);
-                
+
                 // Check for polar conditions
                 PolarCondition = _astronomicalCalculator.GetPolarCondition(Location, SelectedDate);
                 IsPolarRegion = _astronomicalCalculator.IsPolarRegion(Location);
                 PolarConditionMessage = PolarCondition?.GetUserMessage() ?? "";
-                
+
                 // Calculate current position if highlighting is enabled
                 if (HighlightCurrentPosition)
                 {
@@ -116,7 +116,7 @@ public partial class SunPathViewModel : ViewModelBase
                     }
                     else
                     {
-                        SunPathChart = _visualizationService.CreateSunPathDiagram(CurrentSunPath, CurrentPosition);
+                        SunPathChart = _visualizationService.CreateSunPathDiagram(CurrentSunPath, CurrentPosition ?? _astronomicalCalculator.CalculateSolarPosition(Location, DateTime.Now));
                     }
                     UpdateSunPathInfo();
                 }
@@ -147,7 +147,7 @@ public partial class SunPathViewModel : ViewModelBase
             try
             {
                 CurrentPosition = _astronomicalCalculator.CalculateSolarPosition(Location, DateTime.Now);
-                
+
                 // Use appropriate visualization based on polar conditions
                 if (PolarCondition != null && PolarCondition.RequiresSpecialVisualization)
                 {
@@ -181,7 +181,7 @@ public partial class SunPathViewModel : ViewModelBase
     private async Task ToggleSeasonalPathsAsync()
     {
         ShowSeasonalPaths = !ShowSeasonalPaths;
-        
+
         if (ShowSeasonalPaths)
         {
             await CalculateSeasonalPathsAsync();
@@ -209,9 +209,9 @@ public partial class SunPathViewModel : ViewModelBase
         if (SunPathChart?.PlotModel != null)
         {
             var success = _visualizationService.ShowExportDialog(
-                SunPathChart.PlotModel, 
+                SunPathChart.PlotModel,
                 $"sun-path-{Location.Latitude:F2}N-{Location.Longitude:F2}E-{SelectedDate:yyyy-MM-dd}");
-            
+
             StatusMessage = success ? "Chart exported successfully" : "Export cancelled";
         }
     }
@@ -306,7 +306,7 @@ public partial class SunPathViewModel : ViewModelBase
     private void OnPositionSelectedFromChart(object? sender, SunPathInteractionEventArgs e)
     {
         StatusMessage = $"Selected position: Az {e.Azimuth:F1}°, El {e.Elevation:F1}°";
-        
+
         if (e.TimeOfDay.HasValue)
         {
             StatusMessage += $" at {e.TimeOfDay.Value:HH:mm}";
@@ -329,7 +329,7 @@ public partial class SunPathViewModel : ViewModelBase
         {
             var sunrise = CurrentSunPath.Sunrise!.Timestamp;
             var sunset = CurrentSunPath.Sunset!.Timestamp;
-            
+
             DayLength = sunset - sunrise;
             SunriseTime = sunrise.ToString("HH:mm");
             SunsetTime = sunset.ToString("HH:mm");

@@ -30,10 +30,10 @@ namespace SolarPositionCalculator.Services
                 return;
 
             _isRunning = true;
-            
+
             // Fire initial update immediately
             FireTimeUpdate();
-            
+
             // Start the timer for subsequent updates
             _timer.Start();
         }
@@ -47,7 +47,7 @@ namespace SolarPositionCalculator.Services
             _timer.Stop();
         }
 
-        private void OnTimerTick(object sender, EventArgs e)
+        private void OnTimerTick(object? sender, EventArgs e)
         {
             FireTimeUpdate();
         }
@@ -56,7 +56,7 @@ namespace SolarPositionCalculator.Services
         {
             var now = DateTime.Now;
             var utcNow = DateTime.UtcNow;
-            
+
             TimeUpdated?.Invoke(this, new TimeUpdateEventArgs(now, utcNow));
         }
 

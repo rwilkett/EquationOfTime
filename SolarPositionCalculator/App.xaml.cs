@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SolarPositionCalculator.Services;
+using SolarPositionCalculator.ViewModels;
 
 namespace SolarPositionCalculator;
 
@@ -22,20 +23,37 @@ public partial class App : Application
     /// </summary>
     protected override async void OnStartup(StartupEventArgs e)
     {
-        // Create and configure the host
-        _host = ServiceConfiguration.CreateHostBuilder().Build();
-        
-        // Start the host
-        await _host.StartAsync();
-        
-        // Set the service provider
-        ServiceProvider = _host.Services;
+        try
+        {
 
-        // Create and show the main window using DI
-        var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
-        mainWindow.Show();
 
-        base.OnStartup(e);
+            // Create and configure the host
+            _host = ServiceConfiguration.CreateHostBuilder().Build();
+
+            // Start the host
+            await _host.StartAsync();
+
+            // Set the service provider
+            ServiceProvider = _host.Services;
+
+            // Create and show the main window using DI
+            var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
+            mainWindow.Show();
+
+            base.OnStartup(e);
+        }
+        catch (Exception ex)
+        {
+            var errorMessage = $"Application startup failed: {ex.Message}\n\n";
+            if (ex.InnerException != null)
+            {
+                errorMessage += $"Inner Exception: {ex.InnerException.Message}\n\n";
+            }
+            errorMessage += $"Stack trace:\n{ex.StackTrace}";
+
+            MessageBox.Show(errorMessage, "Startup Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            Shutdown(1);
+        }
     }
 
     /// <summary>
@@ -51,5 +69,7 @@ public partial class App : Application
 
         base.OnExit(e);
     }
+
+
 }
 

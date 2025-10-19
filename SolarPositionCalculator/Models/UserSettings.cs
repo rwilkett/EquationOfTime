@@ -131,7 +131,7 @@ public class UserSettings
             return new ValidationResult(false, errors.ToArray(), warnings.ToArray());
         }
 
-        return warnings.Count > 0 
+        return warnings.Count > 0
             ? ValidationResult.Warning(warnings.ToArray())
             : ValidationResult.Success();
     }
